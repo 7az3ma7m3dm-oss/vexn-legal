@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reborn Esports</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red: #b22234;
+      --blue: #3c3b6e;
+      --white: #ffffff;
+      --bg: #0a0a14;
+      --card: rgba(12, 12, 22, 0.78);
+      --text: #f5f5fa;
+      --muted: #a8a8c0;
+      --radius: 18px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* American flag striped background */
+    .flag-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        #b22234 0px,
+        #b22234 28px,
+        #ffffff 28px,
+        #ffffff 56px
+      );
+      opacity: 0.12;
+      pointer-events: none;
+    }
+
+    .flag-bg::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 40%;
+      height: 54%;
+      background: #3c3b6e;
+      opacity: 0.9;
+    }
+
+    /* Stars in the blue canton */
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 40%;
+      height: 54%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.35;
+      overflow: hidden;
+    }
+
+    .star {
+      position: absolute;
+      color: white;
+      font-size: 10px;
+      animation: twinkle 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      from { opacity: 0.3; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1.1); }
+    }
+
+    /* Animated orbs */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .gradient-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.5;
+      animation: float 14s ease-in-out infinite;
+    }
+
+    .orb-1 {
+      width: 460px; height: 460px;
+      background: radial-gradient(circle, #b22234 0%, transparent 70%);
+      top: -120px; left: -80px;
+    }
+
+    .orb-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #3c3b6e 0%, transparent 70%);
+      bottom: -100px; right: -60px;
+      animation-delay: -5s;
+    }
+
+    .orb-3 {
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 70%);
+      top: 40%; left: 55%;
+      animation-delay: -9s;
+      opacity: 0.25;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      33% { transform: translate(35px,-45px) scale(1.07); }
+      66% { transform: translate(-25px,25px) scale(0.93); }
+    }
+
+    /* Floating particles */
+    .particles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: #b22234;
+      opacity: 0.45;
+      animation: rise linear infinite;
+    }
+    .particle:nth-child(odd) { background: #3c3b6e; }
+    .particle:nth-child(3n) { background: white; width: 3px; height: 3px; }
+
+    @keyframes rise {
+      0% { transform: translateY(100vh) scale(0.4); opacity: 0; }
+      15% { opacity: 0.5; }
+      85% { opacity: 0.4; }
+      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(178,34,52,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(60,59,110,0.04) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+      pointer-events: none;
+      mask-image: radial-gradient(ellipse 90% 70% at 50% 20%, black 10%, transparent 75%);
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Nav */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 26px 0;
+    }
+
+    .logo {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.4rem;
+      letter-spacing: 0.1em;
+      background: linear-gradient(135deg, #fff, #b22234, #3c3b6e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: filter 0.3s;
+    }
+    .logo:hover { filter: brightness(1.25); }
+
+    .logo-icon {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #b22234, #3c3b6e);
+      display: grid;
+      place-items: center;
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: white;
+      -webkit-text-fill-color: white;
+      box-shadow: 0 0 28px rgba(178,34,52,0.5);
+      position: relative;
+      overflow: hidden;
+      animation: spin-slow 12s linear infinite;
+    }
+
+    @keyframes spin-slow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.25s, text-shadow 0.25s;
+      position: relative;
+    }
+    .nav-links a:hover {
+      color: #b22234;
+      text-shadow: 0 0 12px rgba(178,34,52,0.6);
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: -5px;
+      width: 0; height: 2px;
+      background: linear-gradient(90deg, #b22234, #3c3b6e);
+      transition: width 0.35s ease;
+      border-radius: 2px;
+    }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 70px 0 50px;
+      position: relative;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(178,34,52,0.15);
+      border: 1px solid rgba(178,34,52,0.4);
+      color: #ff6b7a;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 9px 18px;
+      border-radius: 999px;
+      margin-bottom: 28px;
+      animation: pulse-badge 2.5s ease-in-out infinite;
+      backdrop-filter: blur(8px);
+    }
+    .badge span {
+      width: 8px; height: 8px;
+      background: #b22234;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #b22234;
+      animation: blink 1.4s infinite;
+    }
+    @keyframes blink {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.25; }
+    }
+    @keyframes pulse-badge {
+      0%,100% { box-shadow: 0 0 0 0 rgba(178,34,52,0.35); }
+      50% { box-shadow: 0 0 0 10px rgba(178,34,52,0); }
+    }
+
+    .hero h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(3rem, 9vw, 5.4rem);
+      line-height: 1.02;
+      letter-spacing: 0.04em;
+      margin-bottom: 18px;
+    }
+    .hero h1 .line1 { display: block; color: white; text-shadow: 0 0 30px rgba(255,255,255,0.2); }
+    .hero h1 .line2 {
+      display: block;
+      background: linear-gradient(135deg, #b22234, #ffffff, #3c3b6e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% auto;
+      animation: gradient-shift 3.5s ease infinite;
+    }
+    @keyframes gradient-shift {
+      0%,100% { background-position: 0% center; }
+      50% { background-position: 100% center; }
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto 28px;
+    }
+      25% { transform: rotate(1.5deg) scale(1.02); }
+      50% { transform: rotate(0deg) scale(1); }
+      75% { transform: rotate(-1.5deg) scale(1.02); }
+    }
+
+    /* CTA */
+    .cta-wrap { display: inline-block; position: relative; margin-bottom: 20px; }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(135deg, #5865F2, #7289da);
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 18px 36px;
+      border-radius: 16px;
+      text-decoration: none;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
+      box-shadow: 0 10px 35px rgba(88,101,242,0.45);
+      position: relative;
+      overflow: hidden;
+    }
+    .cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2), transparent);
+      transform: translateX(-120%);
+      transition: transform 0.7s;
+    }
+    .cta:hover {
+      transform: translateY(-5px) scale(1.04);
+      box-shadow: 0 18px 50px rgba(88,101,242,0.6);
+    }
+    .cta:hover::before { transform: translateX(120%); }
+    .cta svg { width: 24px; height: 24px; fill: currentColor; }
+
+    /* Spinning ring around CTA */
+    .spin-ring {
+      position: absolute;
+      inset: -12px;
+      border: 2px solid transparent;
+      border-top-color: #b22234;
+      border-right-color: #3c3b6e;
+      border-radius: 24px;
+      animation: spin-ring 3s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes spin-ring {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Stats */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      flex-wrap: wrap;
+      padding: 30px 0 50px;
+    }
+    .stat { text-align: center; }
+    .stat-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.3rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #b22234, #ffffff, #3c3b6e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 4px;
+    }
+
+    /* Features grid - more cards */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      padding: 10px 0 60px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius);
+      padding: 32px 26px;
+      backdrop-filter: blur(16px);
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), border-color 0.3s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #b22234, #ffffff, #3c3b6e, #ffffff, #b22234);
+      background-size: 200% 100%;
+      opacity: 0;
+      transition: opacity 0.3s;
+      animation: border-flow 3s linear infinite;
+    }
+    @keyframes border-flow {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 200% 0%; }
+    }
+    .card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(178,34,52,0.35);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.45), 0 0 40px rgba(178,34,52,0.15);
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 1.5rem;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, rgba(178,34,52,0.2), rgba(60,59,110,0.25));
+      border: 1px solid rgba(178,34,52,0.3);
+      transition: transform 0.4s;
+    }
+    .card:hover .card-icon {
+      transform: scale(1.15) rotate(12deg);
+      animation: icon-spin 0.6s ease;
+    }
+    @keyframes icon-spin {
+      0% { transform: scale(1) rotate(0); }
+      50% { transform: scale(1.2) rotate(180deg); }
+      100% { transform: scale(1.15) rotate(12deg); }
+    }
+
+    .card h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: 0.04em;
+    }
+    .card p { color: var(--muted); font-size: 0.95rem; }
+
+    /* Extra section: Games */
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 28px;
+      letter-spacing: 0.06em;
+      background: linear-gradient(90deg, #b22234, #fff, #3c3b6e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .games {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding-bottom: 70px;
+    }
+
+    .game-chip {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 16px 28px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      backdrop-filter: blur(12px);
+      cursor: default;
+    }
+    .game-chip:hover {
+      transform: translateY(-6px) scale(1.05);
+      border-color: rgba(178,34,52,0.4);
+      box-shadow: 0 12px 30px rgba(178,34,52,0.2);
+    }
+    .game-chip span { font-size: 1.3rem; }
+
+    /* Marquee ticker */
+    .ticker-wrap {
+      overflow: hidden;
+      background: rgba(178,34,52,0.12);
+      border-top: 1px solid rgba(178,34,52,0.25);
+      border-bottom: 1px solid rgba(178,34,52,0.25);
+      margin: 10px 0 50px;
+      padding: 12px 0;
+    }
+    .ticker {
+      display: flex;
+      gap: 60px;
+      white-space: nowrap;
+      animation: marquee 22s linear infinite;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.12em;
+      color: #ff8a95;
+      text-transform: uppercase;
+    }
+    .ticker span { opacity: 0.9; }
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 36px 0 44px;
+      text-align: center;
+    }
+    .watermark {
+      font-size: 0.85rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .watermark span {
+      background: linear-gradient(90deg, #b22234, #3c3b6e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 600;
+    }
+
+    /* Cursor glow */
+    .cursor-glow {
+      position: fixed;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(178,34,52,0.14) 0%, rgba(60,59,110,0.1) 40%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      transform: translate(-50%,-50%);
+      transition: opacity 0.4s;
+      opacity: 0;
+      mix-blend-mode: screen;
+    }
+    body:hover .cursor-glow { opacity: 1; }
+
+    /* Floating spinning elements */
+    .floater {
+      position: fixed;
+      font-size: 1.6rem;
+      opacity: 0.15;
+      z-index: 0;
+      pointer-events: none;
+      animation: float-spin 18s linear infinite;
+    }
+    @keyframes float-spin {
+      0% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-40px) rotate(180deg); }
+      100% { transform: translateY(0) rotate(360deg); }
+    }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero { padding: 50px 0 40px; }
+      .stats { gap: 28px; }
+      .stat-value { font-size: 1.7rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="flag-bg"></div>
+  <div class="stars" id="stars"></div>
+  <div class="bg-canvas">
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
+  </div>
+  <div class="particles" id="particles"></div>
+  <div class="grid-overlay"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <!-- Floating spinning emojis -->
+  <div class="floater" style="top:15%; left:8%; animation-delay:0s;">🦅</div>
+  <div class="floater" style="top:60%; left:90%; animation-delay:-4s;">⭐</div>
+  <div class="floater" style="top:80%; left:12%; animation-delay:-8s;">🔥</div>
+  <div class="floater" style="top:25%; left:85%; animation-delay:-2s;">⚡</div>
+  <div class="floater" style="top:45%; left:5%; animation-delay:-6s;">💥</div>
+
+  <div class="wrapper">
+    <nav>
+      <a href="#" class="logo">
+        <div class="logo-icon">R</div>
+        REBORN
+      </a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#games">Games</a></li>
+        <li><a href="#join">Join</a></li>
+      </ul>
+    </nav>
+
+    <section class="hero" id="join">
+      <div class="badge"><span></span> Now Recruiting</div>
+      <h1>
+        <span class="line1">REBORN</span>
+        <span class="line2">ESPORTS</span>
+      </h1>
+      <p>Rise stronger. Compete harder. Pure skill, zero excuses.</p>
+
+      <!-- THE REQUESTED MIDDLE TEXT -->
+
+      <div class="cta-wrap">
+        <div class="spin-ring"></div>
+        <a class="cta" href="https://discord.gg/h6JZXJuCXZ" target="_blank" rel="noopener noreferrer" id="discordBtn">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+          </svg>
+          Join the Discord
+        </a>
+      </div>
+    </section>
+
+    <!-- Scrolling ticker -->
+    <div class="ticker-wrap">
+      <div class="ticker">
+        <span>★ REBORN ESPORTS ★</span>
+        <span>★ NOW RECRUITING ★</span>
+        <span>★ JOIN THE SQUAD ★</span>
+        <span>★ COMPETE & DOMINATE ★</span>
+        <span>★  ★</span>
+        <span>★ REBORN ESPORTS ★</span>
+        <span>★ NOW RECRUITING ★</span>
+        <span>★ JOIN THE SQUAD ★</span>
+        <span>★ COMPETE & DOMINATE ★</span>
+        <span>★  ★</span>
+      </div>
+    </div>
+
+    <section class="stats">
+      <div class="stat">
+        <div class="stat-value" data-target="48">0</div>
+        <div class="stat-label">Active Players</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" data-target="27">0</div>
+        <div class="stat-label">Tournaments</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" data-target="156">0</div>
+        <div class="stat-label">Scrims Won</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" data-target="100">0</div>
+        <div class="stat-label">% Effort</div>
+      </div>
+    </section>
+
+    <section class="features" id="about">
+      <div class="card">
+        <div class="card-icon">⚔️</div>
+        <h3>Compete</h3>
+        <p>Scrims, ranked climbs, and tournament runs. Bring your A-game and push limits with the squad.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🤝</div>
+        <h3>Community</h3>
+        <p>High-energy space for players who want to improve, make friends, and find teammates that match your grind.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔥</div>
+        <h3>Elevate</h3>
+        <p>Strategy talks, VOD reviews, and constant improvement. We don’t just play — we get better every session.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏆</div>
+        <h3>Win</h3>
+        <p>Titles, brackets, and clutch moments. Come for the games, stay for the victories and the chaos.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎯</div>
+        <h3>Focus</h3>
+        <p>No tilt, no excuses. Just clean aim, smart plays, and the drive to keep leveling up together.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🚀</div>
+        <h3>Grow</h3>
+        <p>New players welcome. Veterans ready. Whether you’re climbing or coaching, there’s a spot for you.</p>
+      </div>
+    </section>
+
+    <section id="games">
+      <h2 class="section-title">What We Play</h2>
+      <div class="games">
+        <div class="game-chip"><span>🎯</span> Valorant</div>
+        <div class="game-chip"><span>🔫</span> Apex Legends</div>
+        <div class="game-chip"><span>⚔️</span> League of Legends</div>
+        <div class="game-chip"><span>🏎️</span> Rocket League</div>
+        <div class="game-chip"><span>💥</span> Fortnite</div>
+        <div class="game-chip"><span>🎮</span> More coming...</div>
+      </div>
+    </section>
+
+    <footer>
+      <p class="watermark">Made by <span>JustF1zz</span> ♥</p>
+    </footer>
+  </div>
+
+  <script>
+    // Stars in the canton
+    const starsEl = document.getElementById('stars');
+    for (let i = 0; i < 50; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      s.textContent = '★';
+      s.style.left = (5 + Math.random() * 90) + '%';
+      s.style.top = (5 + Math.random() * 90) + '%';
+      s.style.animationDelay = (Math.random() * 2) + 's';
+      s.style.fontSize = (8 + Math.random() * 8) + 'px';
+      starsEl.appendChild(s);
+    }
+
+    // Particles
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 45; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDuration = (7 + Math.random() * 14) + 's';
+      p.style.animationDelay = (Math.random() * 12) + 's';
+      particlesContainer.appendChild(p);
+    }
+
+    // Cursor glow
+    const glow = document.getElementById('cursorGlow');
+    let mouseX = 0, mouseY = 0, currentX = 0, currentY = 0;
+    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+    function animateGlow() {
+      currentX += (mouseX - currentX) * 0.1;
+      currentY += (mouseY - currentY) * 0.1;
+      glow.style.left = currentX + 'px';
+      glow.style.top = currentY + 'px';
+      requestAnimationFrame(animateGlow);
+    }
+    animateGlow();
+
+    // Parallax orbs
+    document.addEventListener('mousemove', e => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 30;
+      const y = (e.clientY / window.innerHeight - 0.5) * 30;
+      document.querySelector('.orb-1').style.transform = `translate(${x}px, ${y}px)`;
+      document.querySelector('.orb-2').style.transform = `translate(${-x * 0.8}px, ${-y * 0.8}px)`;
+      document.querySelector('.orb-3').style.transform = `translate(${x * 0.5}px, ${-y * 0.5}px)`;
+    });
+
+    // Card tilt
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rotateX = (y - rect.height / 2) / 12;
+        const rotateY = (rect.width / 2 - x) / 12;
+        card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px) scale(1.03)`;
+      });
+      card.addEventListener('mouseleave', () => card.style.transform = '');
+    });
+
+    // Magnetic button
+    const btn = document.getElementById('discordBtn');
+    const wrap = btn.parentElement;
+    wrap.addEventListener('mousemove', e => {
+      const rect = wrap.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      btn.style.transform = `translate(${x * 0.22}px, ${y * 0.22}px)`;
+    });
+    wrap.addEventListener('mouseleave', () => btn.style.transform = '');
+
+    // Counters
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const target = parseInt(el.dataset.target);
+          let current = 0;
+          const step = target / 55;
+          const timer = setInterval(() => {
+            current += step;
+            if (current >= target) {
+              el.textContent = target + (target === 100 ? '' : '+');
+              clearInterval(timer);
+            } else {
+              el.textContent = Math.floor(current);
+            }
+          }, 28);
+          observer.unobserve(el);
+        }
+      });
+    }, { threshold: 0.4 });
+    document.querySelectorAll('.stat-value').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
